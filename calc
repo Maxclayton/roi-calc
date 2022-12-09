@@ -1,0 +1,739 @@
+<html>
+
+<head>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+</head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<div class="calc-container">
+   <div class="calc-form-container">
+      <h2>Win Rate Input</h2>
+      <div class="item-container">
+         <h3>Wins</h3>
+         <input min="1" class='inp_cont' id="wins" pattern="^[\d,]+$" required="" type="text" />
+      </div>
+      <div class="item-container">
+         <h3>Losses</h3>
+         <input min="1" class='inp_cont' id="loss" pattern="^[\d,]+$" required="" type="text" />
+      </div>
+      <div class="item-container">
+         <h3>Average Deal Size</h3>
+         <input min="1" class='inp_cont' id="deal" pattern="^[\d,]+$" required="" type="text" />
+         <input type="range" min="1" max="1000000" value="0" class="slider" id="myRange">
+
+      </div>
+      <!-- <button id="reset" onclick="reset()">Clear</button> -->
+   </div>
+   <div class="outputs">
+      <div class="outputs-top">
+         <div class="outputs-top-left">
+            <h3>Win rate with Clozd</h3>
+            <div id="chart-container">
+               <div id="my-rate"></div>
+               <div id="my-rate-10"></div>
+
+            </div>
+         </div>
+         <div class="outputs-top-right">
+            <h2>Win Rate Increase</h2>
+            <div id="wri"></div>
+            <div id="program-roi"></div>
+         </div>
+      </div>
+
+      <div class="outputs-mid">
+         <h2>Net Revenue</h2>
+         <div id="total-roi"></div>
+      </div>
+      <div class="outputs-bottom">
+         <div class="outputs-bottom-left">
+            <h4>Increase <span class="w700">win rate</span> revenue</h4>
+            <div id="wr-roi"></div>
+            <h4><span>At-risk</span> customers</h4>
+            <div id="at-risk-roi"></div>
+
+         </div>
+         <div class="outputs-bottom-right">
+            <h4><span class="700w">Win back </span>opportunities</h4>
+            <div id="wb-roi"></div>
+            <h4>Increase # of deals won</h4>
+            <div id="d-w"></div>
+         </div>
+      </div>
+   </div>
+</div>
+
+<!-- <div class="results-container">
+         <div id="wr-roi"></div>
+      <div id="results-container">
+         <div id="wb-roi"></div>
+      </div>
+      <div id="results-container">
+         <div id="at-risk-roi"></div>
+      </div>
+      <div id="results-container">
+         <div id="total-roi"></div>
+      </div>
+      <div id="chart-container">
+         <div id="my-rate">
+         </div>
+      </div>
+   </div> -->
+
+   </html>
+<style>
+   @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+   .calc-container {
+      display: flex;
+      flex-direction: row;
+      width: auto;
+   }
+
+   .calc-form-container {
+      color: red;
+      display: flex;
+      flex-direction: column;
+      height: 598px;
+      width: 435px;
+      border-radius: 10px;
+      box-shadow: 0px 25px 60px -12px rgb(0 0 0 / 25%);
+      padding-top: 42px;
+      padding-left: 52px;
+      padding-right: 40px;
+   }
+
+   .results-container {
+      font-family: 'Inter', sans-serif;
+      width: 400px;
+   }
+
+   .item-container h2 {
+      font-size: 20px;
+      color: black;
+      margin: 10px 0px 0px 0px;
+      font-family: 'Inter', sans-serif;
+
+   }
+
+   .calc-form-container h2 {
+      color: black;
+      margin: 0;
+      margin-bottom: 25px;
+   }
+
+   .calc-form-container h3 {
+      color: #565F66;
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 0;
+      margin-bottom: 11px;
+      font-family: 'Inter';
+      font-weight: 400;
+   }
+
+   .item-container {
+      display: flex;
+      flex-direction: column;
+   }
+
+   .item-container input {
+      background-color: #E1E3E5;
+      border-radius: 10px;
+      border: 1px solid #E1E3E6;
+      font-size: 25px;
+      padding: 10px;
+      color: black;
+      width: 90%;
+      margin-bottom: 25px;
+      width: 355px;
+      height: 40px;
+   }
+
+   #reset {
+      margin-top: 40px;
+      width: 126px;
+      height: 40px;
+      font-size: 14px;
+      border-radius: 10px;
+      background-color: #14A6F8;
+      border: none;
+      color: white;
+      transition: .2s;
+      display: none;
+   }
+
+   #reset:hover {
+      cursor: pointer;
+      background-color: black;
+   }
+
+   #output-container {
+      color: black;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+   }
+
+   canvas {
+      max-height: 300px;
+      max-width: 569px;
+   }
+
+   #chart-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+   }
+
+   #my-rate {
+      position: absolute;
+      font-size: 50px;
+      margin-left: 10px;
+      color: white;
+      font-family: 'Inter';
+      margin-top: -10px;
+      z-index: 1;
+   }
+
+   .outputs-top-right {
+      color: white;
+   }
+
+   h3 {
+      color: white;
+   }
+
+   .outputs {
+      display: flex;
+      flex-direction: column;
+      width: 525px;
+      background-color: #1F2528;
+      height: 600px;
+      padding: 35px;
+      justify-content: space-around;
+      border-radius: 10px;
+      box-shadow: 0px 25px 60px -12px rgb(0 0 0 / 25%);
+   }
+
+   .outputs-top-left h3 {
+      font-size: 21px;
+      font-family: 'Inter';
+      font-weight: 400;
+   }
+
+   .outputs-mid {
+      width: 50%;
+   }
+
+   .outputs h2 {
+      margin: 0;
+      font-weight: 400;
+   }
+
+   .outputs-top-left {
+      display: flex;
+      flex-direction: column;
+      align-items: baseline;
+      width: auto;
+      width: 60%;
+   }
+
+   div#chart-container {
+      width: 100%;
+   }
+
+   div#total-roi {
+      color: white;
+      font-family: 'Inter';
+      font-size: 48px;
+      margin-bottom: 25px;
+   }
+
+   h2 {
+      color: white;
+      font-size: 21px;
+      font-family: 'Inter';
+   }
+
+   .outputs-top {
+      /* display: flex; */
+      /* flex-direction: row; */
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+   }
+
+   .outputs-top-right {
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      align-items: flex-start;
+      padding-left: 52px;
+   }
+
+   .outputs-bottom-left {
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+   }
+
+   .outputs-bottom {
+      display: flex;
+      flex-direction: row;
+      /* justify-content: space-between; */
+   }
+
+   .outputs-bottom-right {
+      margin-left: 50px;
+   }
+
+   h4 {
+      font-family: 'inter';
+      font-size: 16px;
+      margin: 0;
+      color: white;
+      margin-bottom: 5px;
+      font-weight: 400;
+   }
+
+   div#wr-roi {
+      font-family: 'inter';
+      font-size: 24px;
+      color: white;
+      margin-bottom: 20px;
+   }
+
+   div#at-risk-roi {
+      font-family: 'inter';
+      font-size: 24px;
+      color: white;
+   }
+
+   div#wb-roi {
+      font-family: 'inter';
+      font-size: 24px;
+      color: white;
+      margin-bottom: 20px;
+   }
+
+   div#d-w {
+      font-family: 'inter';
+      font-size: 24px;
+      color: white;
+   }
+
+   .w700 {
+      font-weight: 700;
+
+   }
+
+   div#my-rate-10 {
+      position: absolute;
+      margin-top: 125px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 16px;
+      color: white;
+      font-family: 'Inter';
+   }
+
+   div#wri {
+      font-size: 24px;
+      font-family: 'Inter';
+      margin-bottom: 100px;
+   }
+
+   #myChart {
+      z-index: 2;
+      max-width: 220px;
+   }
+
+   div#program-roi {
+      font-size: 21px;
+      font-family: 'Inter';
+      font-weight: 700;
+      margin-bottom: -60px;
+   }
+
+   .pro-roi-actual {
+      font-size: 50px;
+   }
+
+   .talk-link {
+      color: #14A6F8;
+      font-size: 14px;
+      margin-top: 25px;
+   }
+
+   a {
+      color: #14A6F8;
+      text-decoration: none;
+   }
+
+   .error {
+      border: 2px solid red !important;
+   }
+</style>
+
+<script>
+   var typingTimer;
+   var doneTypingInterval = 100;
+   var $input2 = $('#loss');
+   var $input3 = $('#deal');
+
+
+   $input3.on('keyup', function () {
+      clearTimeout(typingTimer);
+      typingTimer = setTimeout(doneTyping, doneTypingInterval);
+   });
+
+   $input3.on('keydown', function () {
+      clearTimeout(typingTimer);
+   });
+
+   document.getElementById('wins').addEventListener('input', event =>
+      event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US')
+   );
+
+   document.getElementById('loss').addEventListener('input', event =>
+      event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US')
+   );
+
+   document.getElementById('deal').addEventListener('input', event =>
+      event.target.value = (parseInt(event.target.value.replace(/[^\d]+/gi, '')) || 0).toLocaleString('en-US')
+   );
+
+   var count = 0;
+   var count2 = 1;
+
+
+   // WORKING HERE
+
+   var slider = document.getElementById('myRange');
+
+   slider.addEventListener('change', function () {
+
+
+
+      var wins = document.getElementById("wins").value;
+      var loss = document.getElementById("loss").value;
+      var deal = slider.value;
+
+      wins = parseFloat(wins.replace(/,/g, ''));
+      loss = parseFloat(loss.replace(/,/g, ''));
+      deal = parseFloat(deal.replace(/,/g, ''));
+
+
+
+      // WIN RATE
+      var wr = (wins / (wins + loss)) * 100;
+
+      //TOTAL CLOSED OPPORTUNITIES 
+      var tco = wins + loss;
+
+      //TOTAL CLOSED WON VALUE
+      var total = wins * deal;
+
+      //TOTAL CLOSED LOST VALUE
+      var tclv = loss * deal
+
+      //TOTAL CLOSED PIPELINE VALUE
+      var tcpv = total + tclv
+
+      //WIN RATE + 10%
+      var wr10 = wr * 1.1;
+
+      //INCREMENTAL WINS
+      var iw = (wr10 / 100) * tco - wins;
+
+      //INCREMENTAL REVENUE
+      var ir = iw * deal;
+
+      //WIN-BACK OPPORTUNITIES
+      var wbo = loss * .2 * .1;
+
+      //AT RISK CUSTOMERS
+      var arc = wins * .2 * .05;
+
+      // WR ROI
+      var wroi = ir;
+
+      // WIN BACK ROI
+      var wbroi = wbo * deal;
+
+      // AT RISK CUSTOMERS ROI
+      var arcroi = arc * deal;
+
+
+      // TOTAL ROI
+      var totalRoi = wroi + wbroi + arcroi;
+      totalRoi = totalRoi;
+      //FIX TOTAL ROI TO BE AN ACTUAL NUMBER
+
+      if (wins > 0 && loss > 0) {
+
+         document.getElementById("wins").classList.remove("error")
+         document.getElementById("loss").classList.remove("error")
+
+         var dealText = document.getElementById("deal");
+         dealText.value = deal.toLocaleString("en-US");
+         document.getElementById("wr-roi").innerHTML = "$" + Math.round(wroi).toLocaleString("en-US");
+         document.getElementById("wb-roi").innerHTML = "$" + Math.round(wbroi).toLocaleString("en-US");
+         document.getElementById("at-risk-roi").innerHTML = "$" + Math.round(arcroi).toLocaleString("en-US");
+         document.getElementById("total-roi").innerHTML = "$" + Math.round(totalRoi).toLocaleString("en-US");
+         document.getElementById("d-w").innerHTML = Math.round(iw);
+         document.getElementById("my-rate-10").innerHTML = "<div>Current</div>" + Math.round(wr) + '%';
+         document.getElementById("my-rate").innerHTML = Math.round(wr10) + '%';
+         document.getElementById("wri").innerHTML = "+10%"
+         document.getElementById("program-roi").innerHTML = "<div class='proi'>Program ROI</div>" + '<div class="pro-roi-actual">' + Math.round(wr10) + '%' + '</div>' + '<div class="talk-link"><a href="https://www.youtube.com/" target="_blank">*Talk With Us</a></div>';
+
+
+
+
+
+         $('#reset').css('display', 'block');
+
+
+         if (count === 0) {
+            var newCan = document.createElement("CANVAS");
+            newCan.setAttribute('id', 'myChart');
+            var canParent = document.getElementById("chart-container");
+            canParent.appendChild(newCan);
+         }
+
+         if (count > 0) {
+            var elem = document.getElementById("myChart");
+            elem.parentNode.removeChild(elem);
+
+            var newCan = document.createElement("CANVAS");
+            newCan.setAttribute('id', 'myChart');
+            var canParent = document.getElementById("chart-container");
+            canParent.appendChild(newCan);
+
+         }
+
+
+         count++;
+
+
+
+
+         var ctx = document.getElementById("myChart").getContext('2d');
+         var pieTotal = wins + loss
+         wins = wins / pieTotal;
+         loss = loss / pieTotal;
+         wins = wins * 100;
+         loss = loss * 100;
+         diff = (wins * .1);
+
+
+         var myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+               labels: ["Win Percentage", 'Difference', "Loss Percentage"],
+               datasets: [{
+
+                  data: [wins.toFixed(2), diff, loss.toFixed(2)], // Specify the data values array
+                  borderColor: ['#00C371', '#09D4C8', '#F14035'],
+                  backgroundColor: ['#00C371', '#09D4C8', '#F14035'], // Add custom color background (Points and Fill)
+                  borderWidth: 1, // Specify bar border width,
+                  hoverOffset: 5
+
+               }]
+            },
+            options: {
+               responsive: true, // Instruct chart js to respond nicely.
+               maintainAspectRatio: false, // Add to prevent default behaviour of full-width/height 
+               cutout: 99,
+               plugins: {
+                  legend: {
+                     display: false,
+
+                  },
+
+               }
+            }
+         });
+
+
+      }
+
+      else {
+         document.getElementById("wins").classList.add("error")
+         document.getElementById("loss").classList.add("error")
+
+      }
+
+   });
+
+
+
+   function doneTyping() {
+      var wins = document.getElementById("wins").value;
+      var loss = document.getElementById("loss").value;
+      var deal = document.getElementById("deal").value;
+      wins = parseFloat(wins.replace(/,/g, ''));
+      loss = parseFloat(loss.replace(/,/g, ''));
+      deal = parseFloat(deal.replace(/,/g, ''));
+
+      var slider = document.getElementById('myRange');
+
+
+
+
+      // WIN RATE
+      var wr = (wins / (wins + loss)) * 100;
+
+      //TOTAL CLOSED OPPORTUNITIES 
+      var tco = wins + loss;
+
+      //TOTAL CLOSED WON VALUE
+      var total = wins * deal;
+
+      //TOTAL CLOSED LOST VALUE
+      var tclv = loss * deal
+
+      //TOTAL CLOSED PIPELINE VALUE
+      var tcpv = total + tclv
+
+      //WIN RATE + 10%
+      var wr10 = wr * 1.1;
+
+      //INCREMENTAL WINS
+      var iw = (wr10 / 100) * tco - wins;
+
+      //INCREMENTAL REVENUE
+      var ir = iw * deal;
+
+      //WIN-BACK OPPORTUNITIES
+      var wbo = loss * .2 * .1;
+
+      //AT RISK CUSTOMERS
+      var arc = wins * .2 * .05;
+
+      // WR ROI
+      var wroi = ir;
+
+      // WIN BACK ROI
+      var wbroi = wbo * deal;
+
+      // AT RISK CUSTOMERS ROI
+      var arcroi = arc * deal;
+
+
+      // TOTAL ROI
+      var totalRoi = wroi + wbroi + arcroi;
+      totalRoi = totalRoi;
+
+      if (wins > 0 && loss > 0) {
+
+         document.getElementById("wins").classList.remove("error")
+         document.getElementById("loss").classList.remove("error")
+
+         if (deal > 0) {
+            slider.value = deal;
+
+            document.getElementById("wr-roi").innerHTML = "$" + Math.round(wroi).toLocaleString("en-US");
+            document.getElementById("wb-roi").innerHTML = "$" + Math.round(wbroi).toLocaleString("en-US");
+            document.getElementById("at-risk-roi").innerHTML = "$" + Math.round(arcroi).toLocaleString("en-US");
+            document.getElementById("total-roi").innerHTML = "$" + Math.round(totalRoi).toLocaleString("en-US");
+            document.getElementById("d-w").innerHTML = Math.round(iw);
+            document.getElementById("my-rate-10").innerHTML = "<div>Current</div>" + Math.round(wr) + '%';
+            document.getElementById("my-rate").innerHTML = Math.round(wr10) + '%';
+            document.getElementById("wri").innerHTML = "+10%"
+            document.getElementById("program-roi").innerHTML = "<div class='proi'>Program ROI</div>" + '<div class="pro-roi-actual">'
+               + Math.round(wr10) + '%' + '</div>' + '<div class="talk-link"><a href="https://www.youtube.com/" target="_blank">*Talk With Us</a></div>';
+
+            if (count === 0) {
+               var newCan = document.createElement("CANVAS");
+               newCan.setAttribute('id', 'myChart');
+               var canParent = document.getElementById("chart-container");
+               canParent.appendChild(newCan);
+            }
+
+            if (count > 0) {
+               var elem = document.getElementById("myChart");
+               elem.parentNode.removeChild(elem);
+
+               var newCan = document.createElement("CANVAS");
+               newCan.setAttribute('id', 'myChart');
+               var canParent = document.getElementById("chart-container");
+               canParent.appendChild(newCan);
+
+            }
+
+
+            count++;
+
+            var slider = document.getElementById("myRange").value;
+
+
+            var ctx = document.getElementById("myChart").getContext('2d');
+            var pieTotal = wins + loss
+            wins = wins / pieTotal;
+            loss = loss / pieTotal;
+            wins = wins * 100;
+            loss = loss * 100;
+            diff = (wins * .1);
+
+
+            var myChart = new Chart(ctx, {
+               type: 'doughnut',
+               data: {
+                  labels: ["Win Percentage", 'Difference', "Loss Percentage"],
+                  datasets: [{
+
+                     data: [wins.toFixed(2), diff, loss.toFixed(2)], // Specify the data values array
+                     borderColor: ['#00C371', '#09D4C8', '#F14035'],
+                     backgroundColor: ['#00C371', '#09D4C8', '#F14035'], // Add custom color background (Points and Fill)
+                     borderWidth: 1, // Specify bar border width,
+                     hoverOffset: 5
+
+                  }]
+               },
+               options: {
+                  responsive: true, // Instruct chart js to respond nicely.
+                  maintainAspectRatio: false, // Add to prevent default behaviour of full-width/height 
+                  cutout: 99,
+                  plugins: {
+                     legend: {
+                        display: false,
+
+                     },
+
+                  }
+               }
+            });
+
+         }
+
+
+
+
+
+
+
+      }
+
+      else {
+         document.getElementById("wins").classList.add("error")
+         document.getElementById("loss").classList.add("error")
+      }
+
+
+   }
+
+
+
+
+
+</script>
