@@ -1,5 +1,4 @@
 
-<script>
    var typingTimer;
    var doneTypingInterval = 100;
    var $input2 = $('#loss');
@@ -349,6 +348,3 @@
 
 
 
-
-
-</script>
